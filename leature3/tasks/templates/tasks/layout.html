@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{page}}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .form-wrapper {
+            background: white;
+            padding: 2rem 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .title {
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .custom-form label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        .custom-form input {
+            border-radius: 8px;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .custom-form input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 6px rgba(0,123,255,0.4);
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 10px;
+        }
+        .d-flex .btn {
+            flex: 1; /* all buttons same width */
+            min-width: 120px;
+        }
+
+    </style>
+</head>
+<body>
+    {% block body %}{% endblock %}
+</body>
+</html>

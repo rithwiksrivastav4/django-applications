@@ -1,0 +1,25 @@
+{% extends "tasks/layout.html" %}
+{% block body %}
+
+<div class="form-wrapper">
+    <h1 class="title">➕ Add a Person</h1>
+
+    <form class="custom-form" action="{% url 'tasks:add' %}" method="post">
+        {% csrf_token %}
+       <!-- {{ form.as_p}}-->
+
+
+          <input type="text" name="task" placeholder="Enter name" required>
+    <input type="number" name="age" placeholder="Enter age" min="1" max="130" required>
+        <!-- Button row -->
+        <div class="d-flex justify-content-between gap-2">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="{% url 'tasks:delete' %}" class="btn btn-danger">Delete</a>
+<!--            <a href="{% url 'tasks:add' %}" class="btn btn-success">Add New</a> -->
+            <a href="{% url 'tasks:task' %}" class="btn btn-secondary">Back to List</a>
+        </div>
+    </form>
+   
+</div>
+ <h1>Thank You</h1>
+{% endblock %}

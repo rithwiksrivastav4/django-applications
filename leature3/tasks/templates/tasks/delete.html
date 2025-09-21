@@ -1,0 +1,24 @@
+{% extends "tasks/layout.html" %}
+{% block body %}
+
+<div class="form-wrapper">
+    <h1 class="title mb-4">🗑 Delete a Person</h1>
+
+    <form class="custom-form"
+          action="{% url 'tasks:delete' %}"   method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <!-- Input field -->
+        <!--<input type="text" name="name" placeholder="Enter name to delete"
+               style="width: 350px; height: 45px; font-size: 18px; padding: 10px; border-radius: 8px; border: 1px solid #ccc;">-->
+               
+        <div class="d-flex justify-content-between gap-2"> 
+        <!-- Buttons row -->
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'tasks:add' %}" class="btn btn-success">Add New</a>
+        <a href="{% url 'tasks:task' %}" class="btn btn-secondary">Back to List</a>
+        </div>
+    </form>
+</div>
+ <h1>Thank You</h1>
+{% endblock %}

@@ -1,4 +1,4 @@
-name: Django CI/CD (No Build, No Scripts)
+name: Django Docker CI/CD
 
 on:
   push:
@@ -7,16 +7,26 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Must run on your local Minikube host
+    runs-on: self-hosted   # Must be your local machine with Docker Desktop
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Verify kubectl connection
-        run: kubectl get nodes
-
-      - name: Apply Kubernetes manifests
+      - name: Pull latest Docker image
         run: |
-          kubectl apply -f django-applications/leature3/k8s/deployment.yaml
-          kubectl apply -f django-applications/leature3/k8s/service.yaml
+          docker pull rithwik504/basic-project:latest
+
+      - name: Stop running container (if exists)
+        run: |
+          if docker ps -q -f name=basic-project; then
+            docker stop basic-project
+            docker rm basic-project
+          fi
+
+      - name: Run new container
+        run: |
+          docker run -d -p 8000:8000 --name basic-project rithwik504/basic-project:latest
+
+      - name: Verify container is running
+        run: docker ps

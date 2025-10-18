@@ -20,11 +20,3 @@ jobs:
         run: |
           kubectl apply -f django-applications/leature3/k8s/deployment.yaml
           kubectl apply -f django-applications/leature3/k8s/service.yaml
-
-      - name: Force image refresh (optional)
-        run: |
-          kubectl set image deployment/django-app django=your-dockerhub-username/django-app:latest --record
-          kubectl rollout status deployment/django-app
-
-        working-directory: leature3
-        run: python manage.py test

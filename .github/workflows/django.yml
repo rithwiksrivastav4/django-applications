@@ -1,32 +1,40 @@
-name: Django Docker CI/CD
+name: Django CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  deploy:
-    runs-on: self-hosted   # Must be your local machine with Docker Desktop
+  build:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      # Checkout the repository
+      - uses: actions/checkout@v4
 
-      - name: Pull latest Docker image
+      # Set up Python 3.10
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # Cache pip for faster builds
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('leature3/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      # Install dependencies
+      - name: Install Dependencies
+        working-directory: leature3
         run: |
-          docker pull rithwik504/basic-project:latest
-
-      - name: Stop running container (if exists)
-        run: |
-          if docker ps -q -f name=basic-project; then
-            docker stop basic-project
-            docker rm basic-project
-          fi
-
-      - name: Run new container
-        run: |
-          docker run -d -p 8000:8000 --name basic-project rithwik504/basic-project:latest
-
-      - name: Verify container is running
-        run: docker ps
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      # Run Django tests
+      - name: Run Tests
+        working-directory: leature3
+        run: python manage.py test

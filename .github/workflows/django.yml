@@ -30,4 +30,3 @@ jobs:
     - name: Run Tests
       run: |
         python leature3/manage.py test
-

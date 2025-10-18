@@ -1,42 +1,30 @@
-name: Django CI
+name: Django CI/CD (No Build, No Scripts)
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: self-hosted  # Must run on your local Minikube host
 
     steps:
-      # Checkout the repository
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Set up Python 3.10
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
+      - name: Verify kubectl connection
+        run: kubectl get nodes
 
-      # Cache pip for faster builds
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('leature3/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      # Install dependencies
-      - name: Install Dependencies
-        working-directory: leature3
+      - name: Apply Kubernetes manifests
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          kubectl apply -f django-applications/leature3/k8s/deployment.yaml
+          kubectl apply -f django-applications/leature3/k8s/service.yaml
 
-      # Run Django tests
-      - name: Run Tests
+      - name: Force image refresh (optional)
+        run: |
+          kubectl set image deployment/django-app django=your-dockerhub-username/django-app:latest --record
+          kubectl rollout status deployment/django-app
+
         working-directory: leature3
         run: python manage.py test

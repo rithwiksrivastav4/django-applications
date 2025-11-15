@@ -20,7 +20,7 @@ spec:
         - containerPort: 8000
         env:
         - name: DJANGO_SETTINGS_MODULE
-          value: "your_project_name.settings"
+          value: "leature3.settings"
 ---
 apiVersion: v1
 kind: Namespace

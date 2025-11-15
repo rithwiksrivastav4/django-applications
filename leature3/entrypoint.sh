@@ -1,10 +1,11 @@
+# create the file with the entrypoint we discussed
+mkdir -p leature3
+cat > leature3/entrypoint.sh <<'EOF'
 #!/bin/sh
 set -e
 
-# default port fallback
 : "${PORT:=8000}"
 
-# optional: simple retry loop for migrations (handles DB not-ready)
 MAX_RETRIES=${MIGRATE_RETRIES:-10}
 SLEEP_SECONDS=${MIGRATE_SLEEP:-3}
 
@@ -25,5 +26,10 @@ if [ "$n" -ge "$MAX_RETRIES" ]; then
   exit 1
 fi
 
-# Start gunicorn as PID 1 so it receives signals properly
 exec gunicorn leature3.wsgi:application --bind 0.0.0.0:${PORT} --workers ${GUNICORN_WORKERS:-3} --timeout ${GUNICORN_TIMEOUT:-30}
+EOF
+
+# make executable
+git add leature3/entrypoint.sh
+git commit -m "Add entrypoint script"
+git push origin main   # or whatever branch Jenkins builds

@@ -1,16 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: django-app
+  name: django-app-svc
   namespace: production
-  labels:
-    app: django-app
 spec:
-  type: ClusterIP
   selector:
     app: django-app
   ports:
-    - name: http
-      port: 80        # external port inside the cluster
-      targetPort: 8000
-      protocol: TCP
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
+  type: LoadBalancer

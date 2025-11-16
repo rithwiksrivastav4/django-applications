@@ -1,36 +1,39 @@
-# Use official Python slim image
 FROM python:3.11-slim
 
-# Prevent Python from writing pyc files and enable unbuffered output
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-ENV PORT=8000
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    POETRY_VIRTUALENVS_CREATE=false
 
-# Set working directory
 WORKDIR /app
 
-# Install build deps
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-       build-essential \
-       libpq-dev \
-       curl \
-    && rm -rf /var/lib/apt/lists/*
+# Install system deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libpq-dev gcc curl git && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install
-COPY requirements.txt /app/
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Install pip and dependencies
+COPY requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip && pip install -r /app/requirements.txt
 
-# Copy project files
-COPY . /app/
+# Copy app
+COPY . /app
 
-# Add entrypoint script and make it executable
-COPY leature3/entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+# Create a non-root user
+RUN useradd --create-home appuser
+USER appuser
+WORKDIR /home/appuser
 
-# Expose port 8000 for Render / Kubernetes port-forwarding
+# Copy app to non-root user home
+RUN mkdir -p /home/appuser/app
+COPY --chown=appuser:appuser . /home/appuser/app
+WORKDIR /home/appuser/app
+
+ENV PATH="/home/appuser/.local/bin:${PATH}"
+
+# Collect static (will succeed later in k8s if missing)
+RUN python manage.py collectstatic --noinput || true
+
 EXPOSE 8000
 
-# Use entrypoint to run migrations then exec gunicorn (PID 1)
-ENTRYPOINT ["/app/entrypoint.sh"]
+# Note: replace YOUR_DJANGO_PROJECT with the folder that contains wsgi.py
+CMD ["gunicorn", "leature3.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--access-logfile", "-"]
